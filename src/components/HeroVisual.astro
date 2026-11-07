@@ -1,0 +1,245 @@
+---
+// Decorative topographic contour hero: raw WebGL, no dependencies.
+// First version one-shot by GPT-6-Astra (prompt kept outside the repo in ~/sam-blog-lab).
+// Colors come from the CSS variables below; it pauses off-screen and shows a still frame under reduced motion.
+---
+<div class="hero" id="hero-topo">
+  <canvas aria-hidden="true"></canvas>
+</div>
+
+<style>
+  .hero {
+    --hero-bg: #ffffff; --hero-line: #d4d4d8; --hero-accent: #ea580c;
+    height: 280px; position: relative; overflow: hidden;
+    border: 1px solid var(--hero-line); border-radius: 12px; background: var(--hero-bg);
+    margin: .5rem 0 0;
+  }
+  canvas { display: block; width: 100%; height: 100%; visibility: hidden; }
+  @media (max-width: 599px) { .hero { height: 220px; } }
+  @media (prefers-color-scheme: dark) {
+    .hero { --hero-bg: #111111; --hero-line: #2a2a2e; --hero-accent: #f97316; }
+  }
+</style>
+
+<script>
+const hero = document.getElementById('hero-topo');
+if (hero) mount(hero);
+function mount(hero) {
+const canvas = hero.querySelector('canvas');
+const dark = matchMedia('(prefers-color-scheme: dark)');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const removers = [], rest = [.58, .48], target = [...rest], cursor = [...rest];
+let gl, program, buffer, u, resizer, intersection;
+let ready = false, lost = false, dead = false, visible = false, webgl2 = false;
+let raf = 0, last = 0, time = 0, accent = 0, over = false, ratio = 1;
+function listen(object, name, handler, options) {
+  object.addEventListener(name, handler, options);
+  removers.push(() => object.removeEventListener(name, handler, options));
+}
+function stop() { cancelAnimationFrame(raf); raf = 0; last = 0; }
+function colors() {
+  if (!ready) return;
+  const css = getComputedStyle(hero);
+  gl.useProgram(program);
+  ['bg', 'line', 'accent'].forEach((name) => {
+    // The build minifies #111111 to #111, so expand 3-digit hex before parsing.
+    let hex = css.getPropertyValue('--hero-' + name).trim().slice(1);
+    if (hex.length === 3) hex = hex.replace(/./g, (c) => c + c);
+    gl.uniform3fv(u[name], [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16) / 255));
+  });
+}
+function init() {
+  ready = false;
+  try {
+    const deriv = webgl2 || !!gl.getExtension('OES_standard_derivatives');
+    const prefix = webgl2 ? '#version 300 es\n' : '';
+    const vertex = prefix + `${webgl2 ? 'in' : 'attribute'} vec2 aPosition;
+void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }`;
+    const fragment = prefix + (!webgl2 && deriv ? '#extension GL_OES_standard_derivatives : enable\n' : '') + `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uResolution, uCursor;
+uniform float uTime, uAccent, uPixelRatio;
+uniform vec3 uBg, uLine, uColor;
+${webgl2 ? 'out vec4 fragColor;' : ''}
+float hash(vec2 p) {
+  vec3 q = fract(vec3(p.xyx) * .1031);
+  q += dot(q, q.yzx + 33.33);
+  return fract((q.x + q.y) * q.z);
+}
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x),
+    mix(hash(i + vec2(0, 1)), hash(i + vec2(1)), f.x), f.y);
+}
+float heightAt(vec2 uv) {
+  vec2 scale = vec2(uResolution.x / uResolution.y, 1);
+  vec2 p = (uv - .5) * scale * 3.5 + vec2(4.8, 2.1);
+  p += vec2(uTime * .009, uTime * -.006);
+  float h = .64 * noise(p) + .26 * noise(p * 2.0 + 8.3)
+          + .10 * noise(p * 4.0 + 17.1);
+  vec2 d = (uv - uCursor) * scale;
+  return (h + .065 * uAccent * exp(-dot(d, d) * 22.0)) * 22.0;
+}
+void main() {
+  vec2 uv = gl_FragCoord.xy / uResolution;
+  float h = heightAt(uv);
+  float width = ${deriv ? 'fwidth(h)' : `abs(heightAt(uv + vec2(1.0 / uResolution.x, 0)) - h)
+    + abs(heightAt(uv + vec2(0, 1.0 / uResolution.y)) - h)`};
+  width = max(width, .0001);
+  float major = 1.0 - step(.5, mod(floor(h + .5), 5.0));
+  float dist = abs(fract(h + .5) - .5);
+  float radius = width * mix(.32, .48, major) * uPixelRatio;
+  float ink = 1.0 - smoothstep(max(0.0, radius - width * .5),
+    radius + width * .5, dist);
+  vec2 d = (uv - uCursor) * vec2(uResolution.x / uResolution.y, 1);
+  float focus = uAccent * exp(-dot(d, d) * 12.0);
+  vec3 line = mix(uLine, uColor, focus * .9);
+  ${webgl2 ? 'fragColor' : 'gl_FragColor'} = vec4(mix(uBg, line, ink * mix(.72, .96, major)), 1);
+}`;
+    program = gl.createProgram();
+    for (const [type, source] of [[gl.VERTEX_SHADER, vertex], [gl.FRAGMENT_SHADER, fragment]]) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      gl.attachShader(program, shader);
+      gl.deleteShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw Error();
+    }
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw Error();
+    gl.useProgram(program);
+    buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const position = gl.getAttribLocation(program, 'aPosition');
+    gl.enableVertexAttribArray(position);
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+    u = {};
+    const names = { resolution: 'Resolution', cursor: 'Cursor', time: 'Time', strength: 'Accent', pixel: 'PixelRatio', bg: 'Bg', line: 'Line', accent: 'Color' };
+    for (const key in names) u[key] = gl.getUniformLocation(program, 'u' + names[key]);
+    ready = true;
+    colors();
+  } catch (_) {
+    ready = false;
+    if (buffer) gl.deleteBuffer(buffer);
+    if (program) gl.deleteProgram(program);
+    canvas.style.visibility = 'hidden';
+  }
+}
+function draw() {
+  gl.uniform2f(u.resolution, canvas.width, canvas.height);
+  gl.uniform2fv(u.cursor, cursor);
+  gl.uniform1f(u.time, time);
+  gl.uniform1f(u.strength, accent);
+  gl.uniform1f(u.pixel, ratio);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  canvas.style.visibility = 'visible';
+}
+function active() { return ready && !lost && !dead && visible && !document.hidden; }
+function refresh() {
+  if (!active()) { stop(); return; }
+  if (reduced.matches) { stop(); draw(); }
+  else if (!raf) raf = requestAnimationFrame(frame);
+}
+function resize() {
+  if (!ready || lost || dead) return;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (!w || !h) return;
+  const scale = Math.min(devicePixelRatio || 1, 2, Math.sqrt(1500000 / (w * h)));
+  canvas.width = Math.max(1, Math.floor(w * scale));
+  canvas.height = Math.max(1, Math.floor(h * scale));
+  ratio = canvas.height / h;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  refresh();
+}
+function frame(now) {
+  raf = 0;
+  if (!active() || reduced.matches) return;
+  const dt = last ? Math.min((now - last) / 1000, .1) : 0;
+  last = now;
+  time += dt;
+  const damping = 1 - Math.exp(-dt * 6.0);
+  for (let i = 0; i < 2; i++) {
+    if (!over) target[i] += (rest[i] - target[i]) * damping;
+    cursor[i] += (target[i] - cursor[i]) * damping;
+  }
+  accent += ((over ? 1 : 0) - accent) * (1 - Math.exp(-dt * 4.0));
+  draw();
+  raf = requestAnimationFrame(frame);
+}
+function pointer(event) {
+  if (reduced.matches) return;
+  const rect = canvas.getBoundingClientRect();
+  target[0] = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  target[1] = Math.max(0, Math.min(1, 1 - (event.clientY - rect.top) / rect.height));
+  over = true;
+}
+function leave() { over = false; }
+function motion() {
+  over = false;
+  accent = 0;
+  cursor.splice(0, 2, ...rest);
+  target.splice(0, 2, ...rest);
+  stop();
+  refresh();
+}
+function destroy() {
+  if (dead) return;
+  dead = true;
+  stop();
+  resizer?.disconnect();
+  intersection?.disconnect();
+  removers.forEach(remove => remove());
+  canvas.style.visibility = 'hidden';
+  if (gl && !lost) {
+    gl.deleteBuffer(buffer);
+    gl.deleteProgram(program);
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+  }
+}
+window.heroTopo = { destroy };
+listen(document, 'astro:before-swap', destroy);
+listen(canvas, 'webglcontextlost', event => {
+  event.preventDefault();
+  lost = true;
+  ready = false;
+  stop();
+  canvas.style.visibility = 'hidden';
+});
+listen(canvas, 'webglcontextrestored', () => {
+  lost = false;
+  init();
+  resize();
+});
+try {
+  const options = { alpha: false, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' };
+  gl = canvas.getContext('webgl2', options);
+  webgl2 = !!gl;
+  gl ||= canvas.getContext('webgl', options);
+} catch (_) { /* CSS fallback. */ }
+if (gl) init();
+if (gl) {
+listen(dark, 'change', () => { colors(); refresh(); });
+listen(reduced, 'change', motion);
+listen(document, 'visibilitychange', refresh);
+listen(window, 'resize', resize);
+for (const name of ['pointerdown', 'pointermove']) listen(canvas, name, pointer, { passive: true });
+for (const name of ['pointerleave', 'pointercancel']) listen(canvas, name, leave, { passive: true });
+listen(window, 'pointerup', event => { if (event.pointerType !== 'mouse') leave(); }, { passive: true });
+resizer = new ResizeObserver(resize);
+resizer.observe(hero);
+intersection = new IntersectionObserver(entries => {
+  visible = entries[0].isIntersecting;
+  if (!visible) leave();
+  refresh();
+});
+intersection.observe(hero);
+resize();
+}
+}
+</script>

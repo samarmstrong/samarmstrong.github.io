@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
+import HeroVisual from '../components/HeroVisual.astro';
 import { getPosts } from '../lib/posts';
 const posts = await getPosts();
 ---
 <Base>
+  <HeroVisual />
   <h1>TODO: headline</h1>
   <p>TODO: short intro (written by Sam)</p>
   <h2>Posts</h2>
