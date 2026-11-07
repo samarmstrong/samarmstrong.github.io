@@ -1,0 +1,38 @@
+:root {
+  --bg: #fff; --fg: #1a1a1a; --muted: #5c5c5c; --border: #ddd; --link: #0b57d0; --code-bg: #f5f5f5;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111; --fg: #e8e8e8; --muted: #a0a0a0; --border: #333; --link: #8ab4f8; --code-bg: #1b1b1b; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 1.0625rem/1.65 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+.wrap { max-width: 44rem; margin: 0 auto; padding: 0 1.25rem; }
+header.site { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .5rem; padding: 1.5rem 0; }
+header.site a.brand { font-weight: 700; color: var(--fg); text-decoration: none; }
+header.site nav { display: flex; gap: 1rem; }
+footer.site { padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+a { color: var(--link); }
+h1, h2, h3 { line-height: 1.25; }
+.muted { color: var(--muted); }
+ul.posts { list-style: none; padding: 0; }
+ul.posts li { margin: 0 0 1.25rem; }
+ul.posts time { color: var(--muted); font-size: .9rem; display: block; }
+.badge { font-size: .75rem; border: 1px solid var(--border); border-radius: 4px; padding: 0 .35rem; color: var(--muted); }
+/* Prose */
+.prose img, .prose svg { max-width: 100%; height: auto; }
+.prose pre { overflow-x: auto; padding: 1rem; border-radius: 6px; font-size: .9rem; line-height: 1.5; border: 1px solid var(--border); }
+.prose code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
+.prose :not(pre) > code { background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+.prose table { display: block; overflow-x: auto; max-width: 100%; border-collapse: collapse; font-size: .95rem; font-variant-numeric: tabular-nums; }
+.prose th, .prose td { border: 1px solid var(--border); padding: .4rem .7rem; text-align: left; }
+.prose thead th { background: var(--code-bg); }
+.prose blockquote { margin-left: 0; padding-left: 1rem; border-left: 3px solid var(--border); color: var(--muted); }
+/* Shiki dual theme: follow prefers-color-scheme */
+.astro-code, .astro-code span { background-color: var(--shiki-light-bg); color: var(--shiki-light); }
+@media (prefers-color-scheme: dark) {
+  .astro-code, .astro-code span { background-color: var(--shiki-dark-bg); color: var(--shiki-dark); }
+}

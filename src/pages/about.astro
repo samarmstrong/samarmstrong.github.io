@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { siteConfig } from '../site.config';
+---
+<Base title="About">
+  <h1>About</h1>
+  <p>TODO: about copy (written by Sam)</p>
+  <ul>
+    <li><a href={siteConfig.links.github}>GitHub</a></li>
+    {siteConfig.links.x ? <li><a href={siteConfig.links.x}>X</a></li> : <li>X: TODO (set in src/site.config.ts)</li>}
+  </ul>
+</Base>

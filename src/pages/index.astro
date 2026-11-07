@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { getPosts } from '../lib/posts';
+const posts = await getPosts();
+---
+<Base>
+  <h1>TODO: headline</h1>
+  <p>TODO: short intro (written by Sam)</p>
+  <h2>Posts</h2>
+  <ul class="posts">
+    {posts.map((p) => (
+      <li>
+        <time datetime={p.data.date.toISOString()}>{p.data.date.toISOString().slice(0, 10)}</time>
+        <a href={`/posts/${p.id}/`}>{p.data.title}</a>
+        {p.data.draft && <span class="badge">draft</span>}
+        <div class="muted">{p.data.description}</div>
+      </li>
+    ))}
+  </ul>
+</Base>
