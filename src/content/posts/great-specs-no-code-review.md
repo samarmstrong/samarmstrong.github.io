@@ -53,8 +53,8 @@ Because the benchmark starts from a known-good, detailed spec and works backward
 
 ## Going from here
 
-Working from a complete, known-good spec is a massive assumption. Most of the time in real projects, nobody hands the agent a 1,000-word spec with worked I/O examples. Despite it's lack of real-world application, it's still a useful data point.
+Working from a complete, known-good spec is a massive assumption. Most of the time in real projects, nobody hands the agent a 1,000-word spec with worked I/O examples. Despite its lack of real-world application, it's still a useful data point.
 
 For next steps, we are going to keep building down this eval path to test setups that look closer to our actual project, where specs are rough and requirements are dubious.
 
-We are also trying to make this accessible so other teams can benchmark their own setups without burning hundreds of millions of tokens just to get the same answers we already paid for. I'll be aiming to rerun this every month. All of the configs and raw results are in [verification-layers](https://github.com/Vigil-SOC/verification-layers-deploy/tree/main/results/seed-1), and if you have a rule set you want us to test, feel free to contact me.
+We are also trying to make this accessible so other teams can benchmark their own setups without burning hundreds of millions of tokens just to get the same answers we already paid for. I'll be aiming to rerun this every month. The harness is open in [verification-layers](https://github.com/samarmstrong/verification-layers), the seed-1 configs and results are in [the deploy repo](https://github.com/Vigil-SOC/verification-layers-deploy/tree/main/results/seed-1), and the full agent traces are in [the seed-1 release](https://github.com/samarmstrong/verification-layers/releases/tag/seed-1). If you have a rule set you want us to test, feel free to contact me.
