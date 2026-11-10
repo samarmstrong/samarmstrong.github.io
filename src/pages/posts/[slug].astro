@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import { getPosts } from '../../lib/posts';
 
@@ -12,6 +13,9 @@ const { Content } = await render(post);
 ---
 <Base title={post.data.title} description={post.data.description} image={`/og/${post.id}.png`} type="article">
   <article>
+    {post.data.banner && (
+      <Image class="banner" src={post.data.banner} alt={post.data.bannerAlt ?? ''} widths={[704, 1024, 1408]} sizes="(max-width: 44rem) 100vw, 44rem" loading="eager" />
+    )}
     <h1>{post.data.title}</h1>
     <p class="muted">
       <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>

@@ -3,6 +3,8 @@ title: "If you have great specs, you don't need to prompt code review or live ve
 date: 2026-11-10
 description: "tl;dr, semi-clickbait, but if you have great specs, you don't need to prompt code review or live verification."
 tags: [agents, evals, software-factories]
+banner: ../../assets/banners/great-specs-no-code-review.jpg
+bannerAlt: "Two-panel meme: someone holds up a sheet of paper labeled CODE REVIEW and says \"Woah.\", then grins and says \"This is worthless!\""
 ---
 
 tl;dr, semi-clickbait, but if you have great specs, you don't need to prompt code review or live verification.

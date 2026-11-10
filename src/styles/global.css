@@ -23,6 +23,7 @@ ul.posts li { margin: 0 0 1.25rem; }
 ul.posts time { color: var(--muted); font-size: .9rem; display: block; }
 .badge { font-size: .75rem; border: 1px solid var(--border); border-radius: 4px; padding: 0 .35rem; color: var(--muted); }
 /* Prose */
+.banner { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); margin: 1.5rem 0 0; }
 .prose img, .prose svg { max-width: 100%; height: auto; }
 .prose pre { overflow-x: auto; padding: 1rem; border-radius: 6px; font-size: .9rem; line-height: 1.5; border: 1px solid var(--border); }
 .prose code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
