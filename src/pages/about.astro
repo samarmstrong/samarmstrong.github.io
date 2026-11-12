@@ -1,12 +1,47 @@
 ---
 import Base from '../layouts/Base.astro';
 import { siteConfig } from '../site.config';
+
+const { links } = siteConfig;
 ---
 <Base title="About">
-  <h1>About</h1>
-  <p>TODO: about copy (written by Sam)</p>
-  <ul>
-    <li><a href={siteConfig.links.github}>GitHub</a></li>
-    {siteConfig.links.x ? <li><a href={siteConfig.links.x}>X</a></li> : <li>X: TODO (set in src/site.config.ts)</li>}
-  </ul>
+  <section class="about-section">
+    <p class="home-kicker">Profile</p>
+    <h1 class="about-title">About</h1>
+    <div class="prose">
+      {siteConfig.about.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+
+    <div class="about-links">
+      <h2 class="section-title">Elsewhere</h2>
+      <ul class="about-links-list">
+        {links.x && (
+          <li>
+            <span class="about-link-label">X</span>
+            <a href={links.x} rel="me noopener noreferrer" target="_blank">
+              @samarmstrongx
+            </a>
+          </li>
+        )}
+        {links.github && (
+          <li>
+            <span class="about-link-label">GitHub</span>
+            <a href={links.github} rel="me noopener noreferrer" target="_blank">
+              github.com/samarmstrong
+            </a>
+          </li>
+        )}
+        {links.cursor && (
+          <li>
+            <span class="about-link-label">Cursor</span>
+            <a href={links.cursor} rel="me noopener noreferrer" target="_blank">
+              cursor.com/@samx
+            </a>
+          </li>
+        )}
+      </ul>
+    </div>
+  </section>
 </Base>

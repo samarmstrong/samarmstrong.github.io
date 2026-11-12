@@ -2,21 +2,53 @@
 import Base from '../layouts/Base.astro';
 import HeroVisual from '../components/HeroVisual.astro';
 import { getPosts } from '../lib/posts';
+import { siteConfig } from '../site.config';
+
 const posts = await getPosts();
+const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 ---
 <Base>
-  <HeroVisual />
-  <h1>TODO: headline</h1>
-  <p>TODO: short intro (written by Sam)</p>
-  <h2>Posts</h2>
-  <ul class="posts">
-    {posts.map((p) => (
-      <li>
-        <time datetime={p.data.date.toISOString()}>{p.data.date.toISOString().slice(0, 10)}</time>
-        <a href={`/posts/${p.id}/`}>{p.data.title}</a>
-        {p.data.draft && <span class="badge">draft</span>}
-        <div class="muted">{p.data.description}</div>
-      </li>
-    ))}
-  </ul>
+  <section class="home-intro">
+    <p class="home-kicker">Agents · Evals · Infra · Security</p>
+    <h1 class="home-headline">{siteConfig.headline}</h1>
+    <p class="home-lede">{siteConfig.intro}</p>
+    <HeroVisual />
+  </section>
+
+  <section aria-labelledby="writing-heading">
+    <div class="section-header">
+      <h2 id="writing-heading" class="section-title">Writing</h2>
+      <span class="section-count">
+        {String(posts.length).padStart(2, '0')} {posts.length === 1 ? 'ENTRY' : 'ENTRIES'}
+      </span>
+    </div>
+    <ul class="posts">
+      {posts.map((p) => (
+        <li class="post-item">
+          <a class="post-card" href={`/posts/${p.id}/`}>
+            <time class="post-card-meta" datetime={p.data.date.toISOString()}>
+              {formatDate(p.data.date)}
+            </time>
+            <div class="post-card-body">
+              <div class="post-card-heading">
+                <span class="post-card-title">
+                  {p.data.title}
+                  {p.data.draft && <span class="badge">draft</span>}
+                </span>
+                <span class="post-card-arrow" aria-hidden="true">&rarr;</span>
+              </div>
+              <p class="post-card-desc">{p.data.description}</p>
+              {p.data.tags.length > 0 && (
+                <div class="post-card-tags" aria-label="Tags">
+                  {p.data.tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
 </Base>
