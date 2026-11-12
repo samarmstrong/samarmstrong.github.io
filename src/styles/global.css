@@ -9,8 +9,8 @@
   --subtle: #5a5a66;
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
-  --accent: #f97316;
-  --accent-soft: rgba(249, 115, 22, 0.14);
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.14);
   --code-bg: #111116;
   --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-sans: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -45,7 +45,7 @@ body {
 }
 
 ::selection {
-  background: rgba(249, 115, 22, 0.28);
+  background: rgba(56, 189, 248, 0.28);
   color: var(--fg);
 }
 
@@ -223,7 +223,7 @@ a:hover {
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  border: 1px solid rgba(249, 115, 22, 0.35);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   background: var(--accent-soft);
   color: var(--accent);
   border-radius: 4px;

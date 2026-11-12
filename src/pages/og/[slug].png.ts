@@ -69,7 +69,7 @@ export const GET: APIRoute = async ({ props }) => {
               fontSize: 22,
               fontFamily: 'GeistMono',
               letterSpacing: '0.08em',
-              color: '#f97316',
+              color: '#38bdf8',
               display: 'flex',
             },
             kicker || ' ',
@@ -104,7 +104,7 @@ export const GET: APIRoute = async ({ props }) => {
           ),
         ],
       ),
-      el('div', { height: 6, background: '#f97316', display: 'flex' }),
+      el('div', { height: 6, background: '#38bdf8', display: 'flex' }),
     ],
   );
   const svg = await satori(tree as any, { width: 1200, height: 630, fonts });
