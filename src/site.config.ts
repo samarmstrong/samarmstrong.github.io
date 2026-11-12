@@ -8,11 +8,11 @@ export const siteConfig = {
   //   - "Every abstraction must fight for its life."
   headline: 'Notes on agents, evals, and software factories.',
   intro:
-    'I work on agents, evals, infra, and security (previously Uber and Amazon). I use this blog to write up experiments on coding agents, specs, code review, and verification.',
+    'I work on agents, evals, infra, and security. I use this blog to write up experiments on coding agents, specs, code review, and verification.',
   description:
     'Notes and experiments on coding agents, evals, software factories, and verification by Sam Armstrong.',
   about: [
-    'I work on agents, evals, infrastructure, and security. Previously, I was an engineer at Uber and Amazon.',
+    'I work on agents, evals, infrastructure, and security.',
     'Most of my recent time has gone into software factories—running coding agents in automated loops from spec to implementation—and benchmarking how different prompts, specs, and review steps behave over long horizons.',
     'I try to automate whatever manual work I run into twice: either script it, hand it to an LLM, or drop the step altogether. Favorite prompt rule: "Every abstraction must fight for its life."',
   ],
