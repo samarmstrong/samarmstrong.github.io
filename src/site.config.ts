@@ -4,17 +4,17 @@ export const siteConfig = {
   // TODO(sam): review or rewrite headline, intro, description, and about copy below.
   // Alternative headline options:
   //   - "Agents, evals, and software factories."
-  //   - "Testing how coding agents actually hold up."
+  //   - "Experiments on coding agents and evals."
   //   - "Every abstraction must fight for its life."
-  headline: 'Building software factories and testing what actually matters.',
+  headline: 'Notes on agents, evals, and software factories.',
   intro:
-    'I work on agents, evals, infra, and security at DeepTempo (previously Uber and Amazon). Mostly writing here as I run experiments on coding agents, specs, and how to automate the parts of software engineering I never want to do by hand again.',
+    'I work on agents, evals, infra, and security at DeepTempo (previously Uber and Amazon). I use this blog to write up experiments on coding agents, specs, code review, and verification.',
   description:
     'Notes and experiments on coding agents, evals, software factories, and verification by Sam Armstrong.',
   about: [
-    "I'm an engineer working on agents, evals, infrastructure, and security at DeepTempo. Before that, I worked at Uber and Amazon.",
-    "Lately I've been building lights-off software factories—loops of coding agents that take a spec, write the change, and verify it with minimal human intervention—and running benchmarks to see which rules and verification layers actually earn their token cost.",
-    'I\'m pretty automation-happy: every manual task makes me ask how to never do it again, whether an LLM can handle it, or whether it needs to happen at all. Favorite prompt rule: "Every abstraction must fight for its life."',
+    'I work on agents, evals, infrastructure, and security at DeepTempo. Before that, I was an engineer at Uber and Amazon.',
+    'Most of my recent time has gone into software factories—running coding agents in automated loops from spec to implementation—and benchmarking how different prompts, specs, and review steps behave over long horizons.',
+    'I try to automate whatever manual work I run into twice: either script it, hand it to an LLM, or drop the step altogether. Favorite prompt rule: "Every abstraction must fight for its life."',
   ],
   // Switch to a custom domain later: change this to e.g. 'https://example.com',
   // add public/CNAME containing the bare domain, and set the domain in
