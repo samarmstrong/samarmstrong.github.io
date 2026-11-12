@@ -8,20 +8,70 @@ export async function getStaticPaths() {
   const posts = await getPosts();
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
+
 const { post } = Astro.props;
 const { Content } = await render(post);
+
+const formatDate = (date: Date) => date.toISOString().slice(0, 10);
+const wordCount = post.body ? post.body.trim().split(/\s+/).length : 0;
+const readingMinutes = Math.max(1, Math.round(wordCount / 220));
 ---
-<Base title={post.data.title} description={post.data.description} image={`/og/${post.id}.png`} type="article">
-  <article>
+<Base
+  title={post.data.title}
+  description={post.data.description}
+  image={`/og/${post.id}.png`}
+  type="article"
+>
+  <article class="post-article">
+    <a class="post-back" href="/">&larr; Writing</a>
+
+    <header class="post-header">
+      <div class="post-meta-row">
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+        {post.data.updated && (
+          <>
+            <span class="post-meta-sep" aria-hidden="true">·</span>
+            <span>
+              updated <time datetime={post.data.updated.toISOString()}>{formatDate(post.data.updated)}</time>
+            </span>
+          </>
+        )}
+        <span class="post-meta-sep" aria-hidden="true">·</span>
+        <span>{readingMinutes} min read</span>
+        {post.data.draft && <span class="badge">draft</span>}
+      </div>
+
+      <h1 class="post-title">{post.data.title}</h1>
+
+      {post.data.tags.length > 0 && (
+        <div class="post-tags" aria-label="Tags">
+          {post.data.tags.map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
     {post.data.banner && (
-      <Image class="banner" src={post.data.banner} alt={post.data.bannerAlt ?? ''} widths={[704, 1024, 1408]} sizes="(max-width: 44rem) 100vw, 44rem" loading="eager" />
+      <figure class="banner-frame">
+        <Image
+          class="banner"
+          src={post.data.banner}
+          alt={post.data.bannerAlt ?? ''}
+          widths={[704, 1024, 1408]}
+          sizes="(max-width: 46rem) 100vw, 46rem"
+          loading="eager"
+        />
+      </figure>
     )}
-    <h1>{post.data.title}</h1>
-    <p class="muted">
-      <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>
-      {post.data.updated && <> · updated <time datetime={post.data.updated.toISOString()}>{post.data.updated.toISOString().slice(0, 10)}</time></>}
-      {post.data.draft && <span class="badge">draft</span>}
-    </p>
-    <div class="prose"><Content /></div>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <footer class="post-footer">
+      <a class="post-back" style="margin-bottom: 0;" href="/">&larr; All writing</a>
+      <a class="post-back" style="margin-bottom: 0;" href="#main-content">Top &uarr;</a>
+    </footer>
   </article>
 </Base>
